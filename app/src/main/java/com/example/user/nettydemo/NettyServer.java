@@ -1,5 +1,7 @@
 package com.example.user.nettydemo;
 
+import com.example.user.nettydemo.protosuff.MyServer;
+
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -75,6 +77,8 @@ public class NettyServer {
 
         channelFuture = mServerBootstrap.bind(PORT_NUMBER);
         isInit = true;
+
+      
     }
 
     public void shutDown() {

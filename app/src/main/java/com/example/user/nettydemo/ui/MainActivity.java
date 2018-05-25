@@ -11,12 +11,15 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.dyuproject.protostuff.runtime.RuntimeSchema;
+import com.example.user.nettydemo.Message;
 import com.example.user.nettydemo.NettyClient;
 import com.example.user.nettydemo.NettyServer;
 import com.example.user.nettydemo.R;
 import com.example.user.nettydemo.Test;
 import com.example.user.nettydemo.business.OnReceiveListener;
 import com.example.user.nettydemo.business.OnServerConnectListener;
+import com.example.user.nettydemo.protosuff.MyClient;
 import com.example.user.nettydemo.service.ServerService;
 
 import java.net.Inet4Address;
@@ -28,7 +31,6 @@ public class MainActivity extends AppCompatActivity {
     private EditText etTitle;
     private EditText etContent;
     private TextView tvRes;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,66 +42,96 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, ServerService.class);
         startService(intent);
 
+
     }
 
     public void connect(View view) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                NettyClient.getInstance()
-                        .connect(new InetSocketAddress("127.0.0.1", NettyServer.PORT_NUMBER), new OnServerConnectListener() {
-                            @Override
-                            public void onConnectSuccess() {
-                                new Handler(Looper.getMainLooper()).post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        Toast.makeText(MainActivity.this, "connect success!", Toast.LENGTH_SHORT).show();
-                                    }
-                                });
-
-                            }
-
-                            @Override
-                            public void onConnectFailed() {
-                                new Handler(Looper.getMainLooper()).post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        Toast.makeText(MainActivity.this, "connect failed!", Toast.LENGTH_SHORT).show();
-                                    }
-                                });
-
-                            }
-                        });
-            }
-        }).start();
+        try {
+            MyClient.main(new String[]{});
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                NettyClient.getInstance()
+//                        .connect(new InetSocketAddress("127.0.0.1", NettyServer.PORT_NUMBER), new OnServerConnectListener() {
+//                            @Override
+//                            public void onConnectSuccess() {
+//                                new Handler(Looper.getMainLooper()).post(new Runnable() {
+//                                    @Override
+//                                    public void run() {
+//                                        Toast.makeText(MainActivity.this, "connect success!", Toast.LENGTH_SHORT).show();
+//                                    }
+//                                });
+//
+//                            }
+//
+//                            @Override
+//                            public void onConnectFailed() {
+//                                new Handler(Looper.getMainLooper()).post(new Runnable() {
+//                                    @Override
+//                                    public void run() {
+//                                        Toast.makeText(MainActivity.this, "connect failed!", Toast.LENGTH_SHORT).show();
+//                                    }
+//                                });
+//
+//                            }
+//                        });
+//            }
+//        }).start();
 
     }
 
     public void send(View view) {
-        Test.ProtoTest protoTest = Test.ProtoTest
-                .newBuilder()
-                .setId(1)
-                .setTitle(etTitle.getText().toString())
-                .setContent(etContent.getText().toString())
-                .build();
-        NettyClient.getInstance().send(protoTest, new OnReceiveListener() {
-            @Override
-            public void handleReceive(final Object msg) {
-                if (msg instanceof Test.ProtoTest) {
-                    Log.d(TAG, "handleReceive: " + ((Test.ProtoTest) msg).getContent());
-                    new Handler(Looper.getMainLooper()).post(new Runnable() {
-                        @Override
-                        public void run() {
-                            tvRes.setText("");
-                            Test.ProtoTest test = (Test.ProtoTest) msg;
-                            tvRes.setText(test.getId() + "\n" +
-                                    test.getTitle() + "\n" +
-                                    test.getContent());
-                        }
-                    });
+//        Test.ProtoTest protoTest = Test.ProtoTest
+//                .newBuilder()
+//                .setId(1)
+//                .setTitle(etTitle.getText().toString())
+//                .setContent(etContent.getText().toString())
+//                .build();
 
-                }
-            }
-        });
+        Message message=new Message("1",etTitle.getText().toString(),etContent.getText().toString());
+//
+//        NettyClient.getInstance().send(protoTest, new OnReceiveListener() {
+//            @Override
+//            public void handleReceive(final Object msg) {
+//                if (msg instanceof Test.ProtoTest) {
+//                    Log.d(TAG, "handleReceive: " + ((Test.ProtoTest) msg).getContent());
+//                    new Handler(Looper.getMainLooper()).post(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            tvRes.setText("");
+//                            Test.ProtoTest test = (Test.ProtoTest) msg;
+//                            tvRes.setText(test.getId() + "\n" +
+//                                    test.getTitle() + "\n" +
+//                                    test.getContent());
+//                        }
+//                    });
+//
+//                }
+//            }
+//        });
+
+//        NettyClient.getInstance().send(message, new OnReceiveListener() {
+//            @Override
+//            public void handleReceive(final Object msg) {
+//                if (msg instanceof Test.ProtoTest) {
+//                    Log.d(TAG, "handleReceive: " + ((Test.ProtoTest) msg).getContent());
+//                    new Handler(Looper.getMainLooper()).post(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            tvRes.setText("");
+//                            Test.ProtoTest test = (Test.ProtoTest) msg;
+//                            tvRes.setText(test.getId() + "\n" +
+//                                    test.getTitle() + "\n" +
+//                                    test.getContent());
+//                        }
+//                    });
+//
+//                }
+//            }
+//        });
+
     }
 }

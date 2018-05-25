@@ -22,6 +22,10 @@ public class Dispatcher extends SimpleChannelInboundHandler<Test.ProtoTest> {
         receiveListenerHolder.put(test.getId(), onReceiveListener);
     }
 
+    public void holdListener(Message  msg,OnReceiveListener onReceiveListener) {
+        receiveListenerHolder.put(Integer.valueOf(msg.id), onReceiveListener);
+    }
+
     @Override
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, Test.ProtoTest protoTest) throws Exception {
         if (receiveListenerHolder.containsKey(protoTest.getId())) {

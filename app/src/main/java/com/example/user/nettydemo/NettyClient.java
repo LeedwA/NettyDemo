@@ -6,6 +6,8 @@ import com.example.user.nettydemo.business.OnReceiveListener;
 import com.example.user.nettydemo.business.OnServerConnectListener;
 
 import java.net.InetSocketAddress;
+import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
@@ -81,6 +83,11 @@ public class NettyClient {
 
         ChannelFuture future = mBootstrap.connect(mServerAddress);
         future.addListener(mConnectFutureListener);
+
+
+        if (mChannel != null && mChannel.isActive()) {
+            return;
+        }
     }
 
     private ChannelFutureListener mConnectFutureListener = new ChannelFutureListener() {
@@ -102,6 +109,27 @@ public class NettyClient {
     };
 
     public synchronized void send(Test.ProtoTest msg, OnReceiveListener listener) {
+        if (mChannel == null) {
+            Log.e(TAG, "send: channel is null");
+            return;
+        }
+
+        if (!mChannel.isWritable()) {
+            Log.e(TAG, "send: channel is not Writable");
+            return;
+        }
+
+        if (!mChannel.isActive()) {
+            Log.e(TAG, "send: channel is not active!");
+            return;
+        }
+        mDispatcher.holdListener(msg, listener);
+        if (mChannel != null) {
+            mChannel.writeAndFlush(msg);
+        }
+
+    }
+    public synchronized void send(Message msg, OnReceiveListener listener) {
         if (mChannel == null) {
             Log.e(TAG, "send: channel is null");
             return;
