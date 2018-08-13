@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, ServerService.class);
         startService(intent);
 
+        Log.d(TAG, "onCreate: 1111" );
 
     }
 
